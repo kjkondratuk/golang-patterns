@@ -17,22 +17,16 @@ func (s *genericService) GetValue() string {
 	return s.msg
 }
 
-// var _ GenericService = localService{}
+var _ GenericService = &localService{}
+
 type localService struct {
 	genericService
 }
 
-func (s *localService) GetValue() string {
-	return s.msg
-}
+var _ GenericService = &deployedService{}
 
-// var _ GenericService = deployedService{}
 type deployedService struct {
 	genericService
-}
-
-func (s *deployedService) GetValue() string {
-	return s.msg
 }
 
 // TODO: implement an extensible New function that allows the caller to define a new GenericService implementation
