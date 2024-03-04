@@ -2,29 +2,52 @@ package main
 
 import (
 	"fmt"
-	"github.com/kjkondratuk/golang-patterns/cmd/abstract_factory/factory"
+	"log"
 	"os"
+
+	"github.com/kjkondratuk/golang-patterns/cmd/abstract_factory/factory"
 )
 
-func main() {
-	//services := []GenericService{
-	//	&genericService{"default implementation"},
-	//	&localService{genericService{"local implementation"}},
-	//	&deployedService{genericService{"deployed implementation"}},
-	//}
+type customService struct {
+	msg string
+}
 
-	//services := []GenericService{
-	//	New("default"),
-	//	New("local"),
-	//	New("deployed"),
-	//}
-	//
-	//for _, s := range services {
-	//	fmt.Printf("%s\n", s.GetValue())
-	//}
+func (cs *customService) GetValue() string {
+	return cs.msg
+}
+
+func main() {
+
+	err := factory.Register("custom", func() factory.GenericService {
+		return &customService{msg: "custom implementation"}
+	})
+	if err != nil {
+		log.Printf("error registering custom service: %v", err)
+		return
+	}
+
+	err = factory.Register("stage", func() factory.GenericService {
+		return &customService{msg: "stage implementation"}
+	})
+	if err != nil {
+		log.Printf("error registering custom service: %v", err)
+		return
+	}
+
+	envServices := []factory.GenericService{
+		factory.New("default"),
+		factory.New("local"),
+		factory.New("deployed"),
+		factory.New("custom"),
+	}
+
+	for _, s := range envServices {
+		fmt.Printf("%s\n", s.GetValue())
+	}
 
 	v := os.Getenv("ENV")
 
 	s := factory.New(v)
+	fmt.Printf("ENV: %s\n", v)
 	fmt.Printf("%s\n", s.GetValue())
 }
