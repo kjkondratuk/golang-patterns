@@ -1,4 +1,4 @@
-package main
+package enum
 
 import (
 	"errors"
@@ -18,7 +18,12 @@ const (
 
 type myEnumVal string
 
-func New(s string) (*myEnumVal, error) {
+type MyEnumVal interface {
+	UnmarshalJSON(b []byte) error
+	Value() string
+}
+
+func New(s string) (MyEnumVal, error) {
 	switch s {
 	case VALUE_1:
 	case VALUE_2:
@@ -26,7 +31,8 @@ func New(s string) (*myEnumVal, error) {
 	default:
 		return nil, fmt.Errorf("Invalid string specified for enum")
 	}
-	return nil, nil
+	val := myEnumVal(s)
+	return &val, nil
 }
 
 func (e *myEnumVal) Value() string {

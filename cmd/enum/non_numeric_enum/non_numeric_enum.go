@@ -29,8 +29,6 @@ const (
 `
 )
 
-var ()
-
 type MyEnumVal string
 
 func (e *MyEnumVal) UnmarshalJSON(b []byte) error {
