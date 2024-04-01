@@ -13,8 +13,8 @@ type Response struct {
 }
 
 type builder struct {
-	msgType string
-	handler Handler
+	msgType  string
+	handlers []Handler
 }
 
 type Handler func(m *Message) *Response
@@ -29,7 +29,7 @@ func (b *builder) WithType(t string) *builder {
 }
 
 func (b *builder) WithHandler(h Handler) *builder {
-	b.handler = h
+	b.handlers = append(b.handlers, h)
 	return b
 }
 
@@ -45,8 +45,8 @@ func (b *builder) toFinishedService() (*finishedService, error) {
 	}
 
 	return &finishedService{
-		msgType: b.msgType,
-		handler: b.handler,
+		msgType:  b.msgType,
+		handlers: b.handlers,
 	}, nil
 }
 
@@ -55,8 +55,8 @@ func (b *builder) Build() (HandlerService, error) {
 }
 
 type finishedService struct {
-	msgType string
-	handler Handler
+	msgType  string
+	handlers []Handler
 }
 
 type HandlerService interface {
@@ -64,5 +64,13 @@ type HandlerService interface {
 }
 
 func (fs *finishedService) Handle(m *Message) *Response {
-	return fs.handler(m)
+	for _, h := range fs.handlers {
+		if m.Headers["type"] == fs.msgType {
+			return h(m)
+		}
+	}
+	return &Response{
+		ResultCode:    500,
+		ResultMessage: nil,
+	}
 }

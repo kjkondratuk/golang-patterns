@@ -37,14 +37,14 @@ func main() {
 	}
 
 	resp1 := service.Handle(&builder.Message{
-		Headers: nil,
+		Headers: map[string]string{"type": "cool"},
 		Body:    []byte("some body"),
 	})
 
 	fmt.Printf("%+v\n", string(resp1.ResultMessage.Body))
 
 	resp2 := service.Handle(&builder.Message{
-		Headers: nil,
+		Headers: map[string]string{"type": "cool"},
 		Body:    []byte("some cool body"),
 	})
 
@@ -58,5 +58,12 @@ func main() {
 	if err != nil {
 		fmt.Printf("There was an error: %s\n", err)
 	}
+
+	resp3 := service.Handle(&builder.Message{
+		Headers: map[string]string{"type": "something else"},
+		Body:    []byte("some cool body"),
+	})
+
+	fmt.Printf("%+v\n", resp3.ResultCode)
 
 }

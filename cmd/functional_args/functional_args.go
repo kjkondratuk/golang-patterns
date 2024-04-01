@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type myStruct struct {
 	// required
@@ -75,5 +78,18 @@ func main() {
 
 	v4 := GoodNew("my other string value", WithSupplementalValues("a supplemental value", "a supplemental value 2"))
 	fmt.Printf("%+v\n", v4)
+
+	opts := []unmutableOption{
+		WithSupplementalValues("a supplemental value", "a supplemental value 2"),
+	}
+
+	if os.Getenv("USE_COMPLEX") != "" {
+		opts = append(opts, WithComplexValue(func(s complexValue) complexValue {
+			return s
+		}))
+	}
+
+	v5 := GoodNew("my other string value", opts...)
+	fmt.Printf("%+v\n", v5)
 
 }
