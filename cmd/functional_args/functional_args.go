@@ -12,6 +12,8 @@ type myStruct struct {
 	// optional array
 	supplementalValues []string
 
+	debug bool
+
 	// optional complex value
 	cval complexValue
 }
@@ -39,6 +41,14 @@ func WithComplexValue(cv ...complexValueOption) unmutableOption {
 			s.cval = o(s.cval)
 		}
 		return s
+	}
+}
+
+func WithDebug() unmutableOption {
+	return func(s myStruct) myStruct {
+		ns := s
+		ns.debug = true
+		return ns
 	}
 }
 
@@ -91,5 +101,11 @@ func main() {
 
 	v5 := GoodNew("my other string value", opts...)
 	fmt.Printf("%+v\n", v5)
+
+	v6 := GoodNew("with debug", WithDebug())
+	fmt.Printf("%+v\n", v6)
+
+	v7 := myStruct{}
+	fmt.Printf("%s", v7.supplementalValues)
 
 }
